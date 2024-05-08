@@ -1,0 +1,160 @@
+import sqlite3
+
+connection = sqlite3.connect('db_217_19_08')
+cursor = connection.cursor()
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS groups
+(id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+balance REAL)''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS bills
+(id INTEGER PRIMARY KEY AUTOINCREMENT,
+id_group INTEGER REFERENCES groups(id),
+title TEXT,
+amount INTEGER,
+date TEXT,
+created_by REAL)''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS users
+(id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT,
+email TEXT,
+member_since TEXT,
+avatar TEXT)''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS group_user
+(id INTEGER PRIMARY KEY AUTOINCREMENT,
+id_group INTEGER REFERENCES groups(id),
+id_user INTEGER REFERENCES users(id),
+balance REAL)''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS bill_user_owes
+(id INTEGER PRIMARY KEY AUTOINCREMENT,
+id_bill INTEGER REFERENCES bills(id),
+id_user INTEGER REFERENCES users(id),
+owes REAL)''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS bill_user_paid
+(id INTEGER PRIMARY KEY AUTOINCREMENT,
+id_bill INTEGER REFERENCES bills(id),
+id_user INTEGER REFERENCES users(id),
+paid REAL)''')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS notes
+(id INTEGER PRIMARY KEY AUTOINCREMENT,
+id_bill INTEGER REFERENCES bills(id),
+id_user INTEGER REFERENCES users(id),
+message TEXT,
+created TEXT)''')
+
+
+def add_data():
+print("Выберите таблицу для добавления данных:")
+print("1. groups")
+print("2. bills")
+print("3. users")
+print("4. group_user")
+print("5. bill_user_owes")
+print("6. bill_user_paid")
+print("7. notes")
+
+choice = input("Ваш выбор: ")
+
+if choice == "1":
+name = input("Введите название группы: ")
+balance = float(input("Введите баланс группы: "))
+cursor.execute('''INSERT INTO groups (name, balance) VALUES (?, ?)''', (name, balance))
+elif choice == "2":
+id_group = int(input("Введите ID группы: "))
+title = input("Введите название счета: ")
+amount = int(input("Введите сумму счета: "))
+date = input("Введите дату (в формате ГГГГ-ММ-ДД): ")
+created_by = float(input("Введите ID создателя: "))
+cursor.execute('''INSERT INTO bills (id_group, title, amount, date, created_by) VALUES (?, ?, ?, ?, ?)''',
+(id_group, title, amount, date, created_by))
+elif choice == "3":
+name = input("Введите имя: ")
+email = input("Vvedite pochtu: ")
+member_since = input("vvedite member_since: ")
+avatar = input("vvedite avatar: ")
+cursor.execute('''INSERT INTO users (name, email, member_since, avatar) VALUES (?, ?, ?, ?)''',
+(name, email, member_since, avatar))
+elif choice == "4":
+id_group = input("Введите id группы: ")
+id_user = input("Введите id юзера: ")
+balance = input("Введите баланс: ")
+cursor.execute('''INSERT INTO group_user (id_group, id_user, balance) VALUES (?, ?, ?)''',
+(id_group, id_user, balance))
+elif choice == "5":
+id_bill = input("Введите id чека: ")
+id_user = input("Введите id юзера: ")
+owes = input("Введите owes: ")
+cursor.execute('''INSERT INTO bill_user_owes (id_bill, id_user, owes) VALUES (?, ?, ?)''',
+(id_bill, id_user, owes))
+elif choice == "6":
+id_bill = input("Введите id чека: ")
+id_user = input("Введите id юзера: ")
+paid = input("Введите paid")
+cursor.execute('''INSERT INTO bill_user_paid (id_bill, id_user, paid) VALUES (?, ?, ?)''',
+(id_bill, id_user, paid))
+elif choice == "7":
+id_bill = input("Введите id чека: ")
+id_user = input("Введите id юзера: ")
+message = input("Введите сообщение: ")
+created = input("Введите input: ")
+cursor.execute('''INSERT INTO notes (id_bill, id_user, message, created) VALUES (?, ?, ?, ?,)''',
+(id_bill, id_user, message, created))
+print("Данные успешно добавлены!")
+
+
+def view_data():
+print("Выберите таблицу для просмотра данных:")
+print("1. groups")
+print("2. bills")
+print("3. users")
+print("4. group_user")
+print("5. bill_user_owes")
+print("6. bill_user_paid")
+print("7. notes")
+
+choice = input("Ваш выбор: ")
+
+if choice == "1":
+cursor.execute('''SELECT * FROM groups''')
+elif
+choice == "2":
+cursor.execute('''SELECT * FROM bills''')
+elif choice == "3":
+cursor.execute('''SELECT * FROM users''')
+elif choice == "4":
+cursor.execute('''SELECT * FROM group_user''')
+elif choice == "5":
+cursor.execute('''SELECT * FROM bill_user_owes''')
+elif choice == "6":
+cursor.execute('''SELECT * FROM bill_user_paid''')
+elif choice == "7":
+cursor.execute('''SELECT * FROM notes''')
+data = cursor.fetchall()
+for row in data:
+print(row)
+
+
+while True:
+print("Выберите действие:")
+print("1. Добавить данные")
+print("2. Вывести данные")
+print("3. Завершить работу")
+choice = input("Ваш выбор: ")
+
+if choice == "1":
+add_data()
+elif choice == "2":
+view_data()
+elif choice == "3":
+break
+else:
+print("Некорректный выбор. Попробуйте еще раз.")
+
+connection.commit()
+connection.close()
